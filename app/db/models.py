@@ -1,6 +1,11 @@
+"""
+This module contains the SQLAlchemy models for the entities of the application.
+"""
+
 from sqlalchemy import Column, Integer, String, Boolean, ARRAY, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db.database import Base
+from app.utils.crypto_utils import encrypt_message, decrypt_message
 
 class Sala(Base):
     """
@@ -23,11 +28,27 @@ class Empresa(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     sector = Column(String, nullable=False)
     nombre = Column(String, nullable=False)
-    identificador = Column(String, unique=True, nullable=False)
-    correo = Column(String, nullable=False)
-    telefono = Column(String, nullable=False)
+    correo = Column(String, unique=True, nullable=False)
+    telefono = Column(String, unique=True, nullable=False)
+    cif = Column(String, nullable=False)
     empleados = relationship("Empleado", back_populates="empresa", overlaps="administracion")
     administracion = relationship("Administrador", back_populates="empresa", overlaps="empleados")
+
+    def __init__(self, **kwargs):
+        """
+        Constructor for the Empresa class
+        """
+        super().__init__(**kwargs)
+        self.empleados = []
+        self.administracion = []
+        if 'cif' in kwargs:
+            self.cif = encrypt_message(kwargs['cif'])
+
+    def get_cif(self):
+        """
+        Decrypts and returns the CIF of the company.
+        """
+        return decrypt_message(self.cif)
 
 class Usuario(Base):
     """
@@ -36,10 +57,24 @@ class Usuario(Base):
     __tablename__ = "usuarios"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    identificador = Column(String, unique=True, nullable=False)
     nombre = Column(String, nullable=False)
-    correo = Column(String, nullable=False)
-    telefono = Column(String, nullable=False)
+    correo = Column(String, unique=True, nullable=False)
+    telefono = Column(String, unique=True, nullable=False)
+    dni = Column(String, nullable=False)
+
+    def __init__(self, **kwargs):
+        """
+        Constructor for the Usuario class
+        """
+        super().__init__(**kwargs)
+        if 'dni' in kwargs:
+            self.dni = encrypt_message(kwargs['dni'])
+
+    def get_dni(self):
+        """
+        Decrypts and returns the DNI of the user.
+        """
+        return decrypt_message(self.dni)
 
 class Empleado(Usuario):
     """

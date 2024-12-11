@@ -24,4 +24,3 @@ app.include_router(sala.router, prefix="/api/v1", tags=["salas"])
 app.include_router(empresa.router, prefix="/api/v1", tags=["empresas"])
 app.include_router(empleado.router, prefix="/api/v1", tags=["empleados"])
 app.include_router(administrador.router, prefix="/api/v1", tags=["administradores"])
-

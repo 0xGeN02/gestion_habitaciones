@@ -2,7 +2,7 @@
 Módulo de esquemas de Sala.
 """
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from app.utils.fecha_utils import HorarioRegex
 
 class SalaBase(BaseModel):
@@ -14,11 +14,7 @@ class SalaBase(BaseModel):
     horarios: List[HorarioRegex]
     identificador: str
 
-    class Config:
-        """
-        Configuraciones del modelo.
-        """
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SalaCreate(SalaBase):
     """

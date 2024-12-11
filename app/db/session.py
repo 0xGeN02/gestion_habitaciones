@@ -4,7 +4,6 @@ Módulo que contiene la configuración de la base de datos.
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from app.core.config import settings
 from dotenv import load_dotenv
 
 # Carga las variables de entorno desde el archivo .env

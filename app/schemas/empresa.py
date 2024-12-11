@@ -1,43 +1,40 @@
+"""
+Módulo de clases de esquemas de Empresa.
+"""
 from typing import List
-from pydantic import BaseModel, EmailStr
-from .usuario import Usuario
+from pydantic import BaseModel, EmailStr, ConfigDict
+from app.utils.string_utils import SectorEnum, CIFPattern, PhoneNumber
+from .empleado import Empleado
 from .administrador import Administrador
 
 class EmpresaBase(BaseModel):
-    sector: str
+    """
+    Modelo base de Empresa.
+    """
+    sector: SectorEnum
     nombre: str
-    identificador: str
+    cif: CIFPattern
     correo: EmailStr
-    telefono: str
+    telefono: PhoneNumber
 
-    class Config:
-        """
-        Configuraciones del modelo.
-        """
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
 class Empresa(EmpresaBase):
     """
     Modelo de Empresa.
     """
     id: int
-    usuarios: List[Usuario] = []
+    empleados: List[Empleado] = []
     administracion: List[Administrador] = []
 
-    class Config:
-        """
-        Configuraciones del modelo.
-        """
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
 class EmpresaCreate(EmpresaBase):
     """
     Modelo de creación de Empresa.
     """
-    pass
 
 class EmpresaUpdate(EmpresaBase):
     """
     Modelo de actualización de Empresa.
     """
-    pass

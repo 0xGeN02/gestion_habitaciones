@@ -1,25 +1,43 @@
-from pydantic import BaseModel, EmailStr
-
+"""
+    Modulo de esquemas de Usuario.
+"""
+from pydantic import BaseModel, EmailStr, ConfigDict
+from app.utils.string_utils import PhoneNumber, DNIPattern
+from app.utils.crypto_utils import decrypt_message
 class UsuarioBase(BaseModel):
     """
     Modelo base de Usuario.
     """
-    identificador: str
     nombre: str
     correo: EmailStr
-    telefono: str
+    telefono: PhoneNumber
+    dni: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class Usuario(UsuarioBase):
     """
     Modelo de Usuario.
     """
     id: int
+
+    @property
+    def dni(self):
+        return decrypt_message(self.dni)
+
+    @dni.setter
+    def dni(self, value):
+        self.dni = value
     
 class UsuarioCreate(UsuarioBase):
     """
     Modelo de creación de Usuario.
     """
-    pass
+    dni: DNIPattern
+
+class UsuarioUpdate(BaseModel):
+    """
+    Modelo para la actualización de un Usuario.
+    """
+    correo: EmailStr = None
+    telefono: PhoneNumber = None
