@@ -118,3 +118,27 @@ async def update_usuario(usuario_id: int, usuario_update: UsuarioUpdate, db: Asy
         await db.rollback()
         raise HTTPException(status_code=500, detail=f"Error en la base de datos: {str(e)}") from e
     return (usuario_id, usuario_update)
+
+async def patch_usuario(usuario_id: int, usuario_update: dict, db: AsyncSession):
+    """
+    Actualiza parcialmente un usuario en la base de datos.
+    """
+    try:
+        async with db.begin():
+            result = await db.execute(select(Usuario).where(Usuario.id == usuario_id))
+            usuario = result.scalar_one_or_none()
+            if not usuario:
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+            for key, value in usuario_update.items():
+                setattr(usuario, key, value)
+
+            await db.flush()
+            await db.refresh(usuario)
+            return usuario
+    except IntegrityError as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="El correo o el teléfono ya están en uso.") from e
+    except SQLAlchemyError as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Error en la base de datos: {str(e)}") from e

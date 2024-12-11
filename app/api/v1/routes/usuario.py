@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from app.schemas.usuario import Usuario, UsuarioCreate, UsuarioUpdate
 from app.services.usuario_service import (create_usuario as service_create_usuario, get_usuario_by_id,
                                         delete_usuario_by_id, update_usuario as service_update_usuario,
-                                        get_usuario_by_correo)
+                                        get_usuario_by_correo, patch_usuario as service_patch_usuario)
 from app.db.session import get_db
 from app.utils.crypto_utils import decrypt_message
 
@@ -72,7 +72,7 @@ async def route_options_usuario():
     Devuelve las opciones permitidas para el recurso usuario
     """
     return {
-        "methods": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE"]
+        "methods": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH", "CONNECT"],
     }
 
 @router.trace("/usuario")
@@ -86,3 +86,10 @@ async def route_trace_usuario(request: Request):
         "headers": dict(request.headers),
         "body": await request.body()
     }
+
+@router.patch("/usuario/{usuario_id}", response_model=Usuario)
+async def route_patch_usuario(usuario_id: int, usuario_update: dict, db: AsyncSession = Depends(get_db)):
+    """
+    Actualiza parcialmente un usuario
+    """
+    return await service_patch_usuario(usuario_id, usuario_update, db)
