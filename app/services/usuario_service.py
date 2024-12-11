@@ -42,6 +42,20 @@ async def get_usuario_by_correo(correo: str, db: AsyncSession):
     result = await db.execute(select(Usuario).where(Usuario.correo == correo))
     return result.scalar_one_or_none()
 
+async def get_usuarios_by_nombre(nombre: str, db: AsyncSession):
+    """
+    Obtiene todos los usuarios por su nombre en la base de datos.
+    """
+    result = await db.execute(select(Usuario).where(Usuario.nombre == nombre))
+    return result.scalars().all()
+
+async def get_all_usuarios(db: AsyncSession):
+    """
+    Obtiene todos los usuarios en la base de datos.
+    """
+    result = await db.execute(select(Usuario))
+    return result.scalars().all()
+
 async def create_usuario(usuario: UsuarioCreate, db: AsyncSession):
     """
     Crea un nuevo usuario en la base de datos.

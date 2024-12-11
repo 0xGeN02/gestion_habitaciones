@@ -5,10 +5,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.future import select
 from app.schemas.usuario import Usuario, UsuarioCreate, UsuarioUpdate
 from app.services.usuario_service import (create_usuario as service_create_usuario, get_usuario_by_id,
                                         delete_usuario_by_id, update_usuario as service_update_usuario,
-                                        get_usuario_by_correo, patch_usuario as service_patch_usuario)
+                                        get_usuario_by_correo, patch_usuario as service_patch_usuario,
+                                        get_usuarios_by_nombre, get_all_usuarios)
 from app.db.session import get_db
 from app.utils.crypto_utils import decrypt_message
 
@@ -42,6 +44,26 @@ async def route_read_usuario(usuario_id: int, db: AsyncSession = Depends(get_db)
 
     return usuario
 
+@router.get("/usuarios", response_model=list[Usuario])
+async def route_get_all_usuarios(db: AsyncSession = Depends(get_db)):
+    """
+    Obtiene todos los usuarios
+    """
+    usuarios = await get_all_usuarios(db)
+    if not usuarios:
+        raise HTTPException(status_code=404, detail="No se encontraron usuarios")
+    return usuarios
+
+@router.get("/usuarios/nombre/{nombre}", response_model=list[Usuario])
+async def route_get_usuarios_by_correo(nombre: str, db: AsyncSession = Depends(get_db)):
+    """
+    Obtiene todos los usuarios por su correo electrónico
+    """
+    usuarios = await get_usuarios_by_nombre(nombre, db)
+    if not usuarios:
+        raise HTTPException(status_code=404, detail="No se encontraron usuarios con ese correo electrónico")
+    return usuarios
+
 @router.delete("/usuario/{usuario_id}")
 async def route_delete_usuario(usuario_id: int, db: AsyncSession = Depends(get_db)):
     """
@@ -72,7 +94,7 @@ async def route_options_usuario():
     Devuelve las opciones permitidas para el recurso usuario
     """
     return {
-        "methods": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH", "CONNECT"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH"],
     }
 
 @router.trace("/usuario")
