@@ -35,6 +35,13 @@ async def get_usuario_by_dni(dni: str, db: AsyncSession):
     result = await db.execute(select(Usuario).where(Usuario.dni == encrypted_dni))
     return result.scalar_one_or_none()
 
+async def get_usuario_by_correo(correo: str, db: AsyncSession):
+    """
+    Obtiene un usuario por su correo en la base de datos.
+    """
+    result = await db.execute(select(Usuario).where(Usuario.correo == correo))
+    return result.scalar_one_or_none()
+
 async def create_usuario(usuario: UsuarioCreate, db: AsyncSession):
     """
     Crea un nuevo usuario en la base de datos.
@@ -44,10 +51,10 @@ async def create_usuario(usuario: UsuarioCreate, db: AsyncSession):
             existing_usuario = await get_usuario_by_dni(usuario.dni, db)
             if existing_usuario:
                 raise ValueError("El usuario con este DNI ya existe.")
-            
+
             encrypted_dni = encrypt_message(usuario.dni)
             logger.info(f"Encrypted DNI: {encrypted_dni}")  # Log the encrypted DNI
-            
+
             nuevo_usuario = Usuario(
                 nombre=usuario.nombre,
                 correo=usuario.correo,
@@ -74,7 +81,7 @@ async def delete_usuario_by_id(usuario_id: int, db: AsyncSession):
             usuario = result.scalar_one_or_none()
             if not usuario:
                 raise HTTPException(status_code=404, detail="Usuario no encontrado")
-            
+
             await db.delete(usuario)
             await db.commit()
             return {"detail": "Usuario eliminado correctamente"}

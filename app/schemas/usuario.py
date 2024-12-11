@@ -23,12 +23,15 @@ class Usuario(UsuarioBase):
 
     @property
     def dni(self):
+        """
+        Getter de DNI.
+        """
         return decrypt_message(self.dni)
 
     @dni.setter
     def dni(self, value):
         self.dni = value
-    
+
 class UsuarioCreate(UsuarioBase):
     """
     Modelo de creación de Usuario.
