@@ -45,7 +45,7 @@ poetry run uvicorn app.main:app --reload
 Para migrar la base de datos mediante sqlalchemy:
 
 ```sh
-    poetry run python -m app/db/migrate.py
+    poetry run python app/db/migrate.py
 ```
 
 ## Test
