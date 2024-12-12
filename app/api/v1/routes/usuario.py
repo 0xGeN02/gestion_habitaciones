@@ -28,20 +28,13 @@ async def route_create_usuario(usuario: UsuarioCreate, db: AsyncSession = Depend
         raise HTTPException(status_code=400, detail="El usuario ya existe.") from exec
 
 @router.get("/usuario/{usuario_id}", response_model=Usuario)
-async def route_read_usuario(usuario_id: int, db: AsyncSession = Depends(get_db)):
+async def route_read_usuario(usuario_id: int, db: AsyncSession = Depends(get_db), desencriptar: bool = False):
     """
     Obtiene un usuario por su id
     """
-    usuario = await get_usuario_by_id(usuario_id, db)
+    usuario = await get_usuario_by_id(usuario_id, db, desencriptar=desencriptar)
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    # Intenta desencriptar el DNI si está presente
-    try:
-        usuario.dni = decrypt_message(usuario.dni)
-    except ValueError:
-        raise HTTPException(status_code=500, detail="Error al desencriptar el DNI")
-
     return usuario
 
 @router.get("/usuarios", response_model=list[Usuario])

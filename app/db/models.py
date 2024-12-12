@@ -31,6 +31,7 @@ class Empresa(Base):
     correo = Column(String, unique=True, nullable=False)
     telefono = Column(String, unique=True, nullable=False)
     cif = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     empleados = relationship("Empleado", back_populates="empresa", overlaps="administracion")
     administracion = relationship("Administrador", back_populates="empresa", overlaps="empleados")
 
@@ -61,6 +62,7 @@ class Usuario(Base):
     correo = Column(String, unique=True, nullable=False)
     telefono = Column(String, unique=True, nullable=False)
     dni = Column(String, nullable=False)
+    password = Column(String, nullable=False)
 
     def __init__(self, **kwargs):
         """

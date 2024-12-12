@@ -16,6 +16,7 @@ class EmpresaBase(BaseModel):
     cif: CIFPattern
     correo: EmailStr
     telefono: PhoneNumber
+    password: str
 
     model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
 
