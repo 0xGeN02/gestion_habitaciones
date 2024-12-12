@@ -6,7 +6,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.api.v1.routes import usuario, superusuario, sala, empresa, empleado, administrador
-from app.api.v1.auth import auth_router
+from app.api.v1.auth import auth_router, auth_user_router
 from app.db.database import engine, Base
 
 logging.basicConfig(
@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(auth_user_router, prefix="/api/v1/auth/user", tags=["auth/usuarios"])
 app.include_router(usuario.router, prefix="/api/v1", tags=["usuarios"])
 app.include_router(superusuario.router, prefix="/api/v1", tags=["superusuarios"])
 app.include_router(sala.router, prefix="/api/v1", tags=["salas"])

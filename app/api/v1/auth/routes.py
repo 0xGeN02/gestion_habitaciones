@@ -42,6 +42,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
+    """Login and return access token"""
     try:
         usuario = await get_usuario_by_correo(form_data.username, db)
         if not usuario:
